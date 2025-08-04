@@ -1,50 +1,62 @@
-# PROJET-ROBOT
+# PID Line Follower Robot
 
-## Présentation du projet
+## Project Overview
 
-Ce projet de robot, réalisé en groupe dans le cadre de notre prépa, consiste en la conception d'un robot suiveur de ligne et/ou éviteur d'obstacles. L'objectif principal est de développer une solution modulaire et évolutive, facilitant ainsi la compréhension, la maintenance et l'extension du code.
+A modular, extensible line-following and obstacle-avoiding robot built on Arduino. Developed as a team project during preparatory classes, the robot uses infrared sensors and PWM motor control with a PID loop to follow lines smoothly and reliably.
 
-## Architecture du projet
+## Hardware Configuration
 
-Nous avons adopté une approche orientée objet, en structurant le projet autour de classes. Cette démarche présente plusieurs avantages :
+* **Microcontroller:** Arduino Uno (with custom shield for power distribution and signal routing)
+* **Motor Driver:** L298N dual H-bridge module for two DC motors
+* **Motors:** Two DC wheels mounted on a custom chassis
+* **Line Sensors:** Three KY-033 infrared reflectance sensors (left, center, right)
+* **Power Supply:** 12 V rechargeable battery pack (replaces original disposable batteries)
+* **Optional:** Infrared remote control for manual commands (forward, backward, left, right, stop)
 
-- **Modularité et séparation des responsabilités** : Chaque classe regroupe une fonctionnalité spécifique du robot (par exemple, la gestion globale du robot ou le contrôle des moteurs), ce qui rend le code plus clair et plus facile à maintenir.
-- **Réutilisabilité** : En isolant les fonctionnalités dans des classes distinctes, il devient plus simple de réutiliser ou d'étendre ces composants dans d'autres projets.
-- **Lisibilité** : La séparation entre les déclarations (fichiers header) et les implémentations (fichiers .cpp) permet de mieux organiser le code, facilitant ainsi la compréhension pour tous les membres de l'équipe et pour les personnes extérieures, comme notre professeure.
+## Software Overview
 
-Voici la structure simplifiée du projet pour faciliter la compréhension :
+The firmware is organized into clear, separate modules for easy maintenance and future extensions:
 
-PROJET-ROBOT-main/
-    ROBOT.ino.ino
-    ROBOT_CONFIG.h
-    Robot.h
-    Robot.cpp
-    moteurs.h
-    moteurs.cpp
+* **Main Sketch (`ROBOT.ino`):** Initializes hardware, starts the control loop.
+* **Robot Module:** High-level control logic, state management (manual vs. auto modes), PID setup.
+* **Motor Module:** Low-level motor driver interface (direction, PWM speed control).
+* **Sensor Module:** Reads and interprets line sensor values into an error metric.
+* **PID Controller:** Continuously computes correction based on line error and adjusts motor speeds.
 
-## Description des fichiers principaux
+> *Note:* The object-oriented structure keeps each component isolated but detailed class explanations are omitted here for clarity.
 
-- **ROBOT.ino.ino**  
-  Fichier principal contenant le code exécuté par l'Arduino. Il initialise le système, instancie la classe `Robot` et lance la boucle principale de contrôle.
+## Installation & Usage
 
-- **Robot.h / Robot.cpp**  
-  Ces fichiers définissent la classe `Robot`, qui centralise la logique de gestion des capteurs, des états et la coordination générale du robot. L'approche orientée objet utilisée ici facilite l'intégration de nouvelles fonctionnalités et la modification du comportement global du robot sans impacter les autres modules.
+1. **Clone the Repository**
 
-- **moteurs.h / moteurs.cpp**  
-  Ces fichiers contiennent la classe ou les fonctions dédiées au contrôle des moteurs du robot. En séparant la logique de déplacement de la gestion globale du robot, nous assurons une meilleure isolation des fonctionnalités et simplifions la maintenance.
+   ```bash
+   git clone https://github.com/leduclean/PROJET-ROBOT.git
+   cd PROJET-ROBOT
+   ```
+2. **Open in Arduino IDE**
 
-- **ROBOT_CONFIG.h**  
-  Ce fichier centralise les paramètres et constantes du robot, permettant une configuration rapide et aisée du système sans modifier directement le code source.
+   * Open `ROBOT.ino` in Arduino IDE or PlatformIO.
+3. **Configure Pins**
 
-## Avantages de l'approche orientée objet dans ce projet
+   * Review and update pin definitions in `ROBOT_CONFIG.h` to match your wiring.
+4. **Upload**
 
-L'utilisation des classes permet d'obtenir un code plus modulaire et clair. Voici quelques bénéfices concrets de cette approche :
+   * Compile and upload to your Arduino board.
+5. **Run**
 
-- **Clarté du code** : Chaque classe a une responsabilité bien définie, ce qui aide à comprendre rapidement le rôle de chaque composant.
-- **Facilité de maintenance** : Les modifications ou ajouts de fonctionnalités peuvent être effectués de manière isolée dans les classes concernées, réduisant ainsi le risque d'introduire des bugs dans d'autres parties du projet.
-- **Évolutivité** : Cette architecture permet d'étendre facilement le projet en ajoutant de nouvelles classes ou en modifiant les existantes, sans avoir à réécrire l'ensemble du code.
+   * Place the robot on a high-contrast line.
+   * Switch to automatic mode to enable PID line-following.
+   * Use the IR remote for manual testing if desired.
 
+## PID Tuning
 
-## Auteurs
+Initial PID parameters were obtained using Ziegler–Nichols and fine-tuned by experiments:
 
-Ce projet a été réalisé en groupe dans le cadre de notre prépa par Léandre LE DUC, Garance BARRET, Dimitri BEOIR, Ilan VARGAS.
+```
+Kp = 19
+Ki = 85
+Kd = 20
+```
+
+Adjust these in the setup section of `Robot.cpp` as needed for different chassis or sensor layouts.
+
